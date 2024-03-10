@@ -1,0 +1,23 @@
+version: "3.9"
+
+services:
+  db3:
+    image: postgres
+    restart: always
+    volumes:
+      - ./data2/db3:/var/lib/postgresql/data 777
+    environment:
+      - POSTGRES_DB=postgres2
+      - POSTGRES_USER=postgres2
+      - POSTGRES_PASSWORD=postgres2
+    ports:
+      - 5432:5432
+  web:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/code
+    ports:
+      - "8000:8000"   
+    depends_on:
+      - db3

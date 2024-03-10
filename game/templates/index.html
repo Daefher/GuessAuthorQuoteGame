@@ -1,0 +1,48 @@
+
+{% extends "base.html" %}
+{% block content  %}
+<div class="bg-white">
+    <div class="mx-auto max-w-7xl py-24 sm:px-6 sm:py-32 lg:px-8">
+      <div class="relative isolate overflow-hidden bg-gray-900 px-6 pt-16 shadow-2xl sm:rounded-3xl sm:px-16 md:pt-24 lg:flex lg:gap-x-20 lg:px-24 lg:pt-0">
+        <div class="mx-auto  text-center lg:mx-0 lg:flex-auto lg:py-32 lg:text-center">
+          <h2 class="text-3xl font-bold tracking-tight text-white sm:text-4xl">{{ Quote.name }}</h2>
+          <p class="mt-6 text-lg leading-8 text-gray-300"> Who is the author of the Quote?</p>
+          <div x-data='{ authors_shuffled: authors_shuffled }' class="mt-10 flex items-center justify-center gap-x-6 lg:center">
+            <template x-for='author in authors_shuffled'>              
+              <a href="#" @click="checkAnswer(author[0])" x-text='author[1]' class="rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-gray-900 shadow-sm hover:bg-gray-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"></a>
+            </template>
+          </div>
+        </div>        
+      </div>
+    </div>
+  </div>
+{%  endblock %}
+{% block extra_js  %}
+    <script>    
+      let authors =  process_answers(JSON.parse('{{ authors | safe  }}'), '{{Quote.author_id.id }}', '{{Quote.author_id.name }}');
+      let answer = '{{Quote.author_id.id }}';
+      let authors_shuffled = authors
+        .map(value => ({ value, sort: Math.random() }))
+        .sort((a, b) => a.sort - b.sort)
+        .map(({ value }) => value);
+
+      function process_answers(authors, answer_id, answer_name){
+        var result = [];
+        result.push([answer_id, answer_name]);
+        Object.entries(authors).forEach((author) => {               
+          result.push([author[1].pk, author[1].fields.name]);          
+        });           
+        return result;
+      }
+
+      function checkAnswer(option){
+        if( option == answer){
+          alert("CORRECT ANSWER");
+          location.reload()
+        }else {
+          alert("WRONG ANSWER");
+        }        
+      }
+    </script>
+
+{%  endblock %}
